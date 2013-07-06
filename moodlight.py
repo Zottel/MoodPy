@@ -31,3 +31,15 @@ class Moodlight:
 	def _sendmsg(self, msg):
 		print(self.dev.ctrl_transfer(0x21,0x09,0,0,msg))
 
+	def setRGB(self, red, green, blue):
+		self._sendmsg([0x10, red, green, blue])
+
+	def setHSV(self, hue, value, saturation):
+		self._sendmsg([0x11, hue, value, saturation])
+
+	def fadeRGB(self, red, green, blue, duration):
+		self._sendmsg([0x20, red, green, blue, duration / 256, duration % 256])
+
+	def fadeHSV(self, hue, value, saturation, duration):
+		self._sendmsg([0x21, hue, value, saturation, duration / 256, duration % 256])
+
