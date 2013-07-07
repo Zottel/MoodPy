@@ -25,3 +25,36 @@ Todo
   to push sequences.
 - Gather information on how to interface with various applications
 
+
+Sequence Programming
+--------------------
+
+Applications may send whole colour changing sequences to the Moodlight.
+
+Fade through HSV colours infinitely::
+	from moodlight import Moodlight, SetHSV, FadeHSV
+
+	m = Moodlight()
+
+	sequence = [
+		SetHSV(0x00, 0xff, 0xff),
+		FadeHSV(0xff, 0xff, 0xff, 1000)
+	]
+	m.execute(sequence, looping = True)
+
+
+Blink red thrice::
+	from moodlight import Moodlight, FadeRGB
+
+	m = Moodlight()
+
+	sequence = [
+		FadeRGB(0xff, 0x00, 0x00, 1000),
+		FadeRGB(0x00, 0x00, 0x00, 1000),
+		FadeRGB(0xff, 0x00, 0x00, 1000),
+		FadeRGB(0x00, 0x00, 0x00, 1000),
+		FadeRGB(0xff, 0x00, 0x00, 1000),
+		FadeRGB(0x00, 0x00, 0x00, 1000)
+	]
+	m.execute(sequence)
+
