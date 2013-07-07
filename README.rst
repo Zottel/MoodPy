@@ -32,6 +32,7 @@ Sequence Programming
 Applications may send whole colour changing sequences to the Moodlight.
 
 Fade through HSV colours infinitely::
+
 	from moodlight import Moodlight, SetHSV, FadeHSV
 
 	m = Moodlight()
@@ -44,6 +45,7 @@ Fade through HSV colours infinitely::
 
 
 Blink red thrice::
+
 	from moodlight import Moodlight, FadeRGB
 
 	m = Moodlight()
