@@ -47,7 +47,7 @@ class GotoROM:
 class Moodlight:
 	def __init__(self):
 		# Find device
-		self.dev = usb.core.find(idVendor=0x03eb, idProduct=0x204f)
+		self.dev = usb.core.find(idVendor=0x1d50, idProduct=0x6079)
 		if self.dev is None:
 			raise Exception("No matching device found")
 
