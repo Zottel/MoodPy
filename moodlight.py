@@ -39,7 +39,7 @@ class Goto:
 		raise Exception("Not implemented")
 
 class GotoROM:
-	def __init(self, target):
+	def __init__(self, target):
 		self.byteLength = 3
 		self.bytes = [0x81, target / 256, target % 256]
 	
