@@ -67,7 +67,8 @@ class Moodlight:
 					self.dev.detach_kernel_driver(0)
 				except usb.core.USBError as e:
 					raise Exception("Could not detatch kernel driver: %s" % str(e))
-		except USBError as e:
+		except usb.core.USBError as e:
+			# TODO: Check for exceptions ignored even by libusb/pyusb
 			print(e)
 
 		#
