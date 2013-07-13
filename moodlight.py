@@ -60,12 +60,15 @@ class Moodlight:
 
 		# Attempt to take device away from kernel
 		self.reattach = False
-		if self.dev.is_kernel_driver_active(0):
-			reattach = True
-			try:
-				self.dev.detach_kernel_driver(0)
-			except usb.core.USBError as e:
-				raise Exception("Could not detatch kernel driver: %s" % str(e))
+		try:
+			if self.dev.is_kernel_driver_active(0):
+				reattach = True
+				try:
+					self.dev.detach_kernel_driver(0)
+				except usb.core.USBError as e:
+					raise Exception("Could not detatch kernel driver: %s" % str(e))
+		except USBError as e:
+			print(e)
 
 		#
 		self.dev.set_configuration()
