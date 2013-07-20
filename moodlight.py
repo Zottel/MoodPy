@@ -36,7 +36,8 @@ class FadeHSV:
 class Goto:
 	def __init__(self, target):
 		self.byteLength = 3
-		raise Exception("Not implemented")
+		self._target = target
+		self.bytes = [0x80, target / 256, target % 256]
 
 class GotoROM:
 	def __init__(self, target):
@@ -89,6 +90,25 @@ class Moodlight:
 		if looping:
 			msg.extend([0x80, 0x00, 0x00])
 		self._sendmsg(msg)
+
+	def writeROM(self, sequence, start = 0):
+		bytes = []
+
+		for i in sequence:
+			if(isinstance(i, Goto)):
+				if i._target == 0:
+					target = start
+				else:
+					target = start + sum([p.byteLength for p in sequence[:i._target - 1]])
+				bytes += [0x80, target / 256, target % 256]
+			else:
+				bytes += i.bytes
+
+		c = len(bytes)
+		self._sendmsg([0x91, start / 256, start % 256, c] + bytes)
+		return c
+
+
 	# Short calls for single commands:
 
 	def setRGB(self, red, green, blue):
