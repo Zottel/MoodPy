@@ -21,8 +21,6 @@ Todo
 - Implement a daemon?
   
   Generic Event -> Light framework?
-- Wait for MoodFirmware EEPROM Programming capability and allow applications
-  to push sequences.
 - Gather information on how to interface with various applications
 
 
