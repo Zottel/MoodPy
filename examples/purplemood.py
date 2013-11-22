@@ -8,13 +8,13 @@ from dbus.mainloop.glib import DBusGMainLoop
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.sys.path.insert(0,parentdir) 
 
-from moodlight import Moodlight
+from moodlight import moodlight_get
 
-m = Moodlight()
+m = moodlight_get()
 
 def my_func(account, sender, message, conversation, flags):
   m.setRGB(0xff, 0x00, 0x00)
-  m.fadeRGB(0x00, 0x00, 0x00, 4000)
+  m.fadeRGB(0x00, 0x00, 0x00, 8000)
 
 dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 bus = dbus.SessionBus()

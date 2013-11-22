@@ -1,15 +1,12 @@
+import logging
+
 import usb.core
 import usb.util
 
 #TODO: It may be cool to catch pyUSB exceptions
 #      and raise Moodlight exceptions that are more readable.
 
-# Turn a USB device into a MoodLightUSB object
-def _usb_moodlight_instance(light):
-	serial = usb.util.get_string(light, 256, light.iSerialNumber)
-	manufacturer = usb.util.get_string(light, 256, light.iManufacturer)
-	product = usb.util.get_string(light, 256, light.iProduct)
-	return MoodlightUSB(light, serial, product, manufacturer)
+moodusb_logger = logging.getLogger('moodlight.moodusb')
 
 # Get all connected USB devices that match MoodLightUSB Vendor and Product IDs
 def _usb_get_all():
@@ -19,43 +16,7 @@ def _usb_get_all():
 	return moodlights
 
 
-# Returns a list with the serial numbers of all connected USB devices
-def usb_list_moodlights():
-	results = []
-
-	moodlights = _usb_get_all()
-	
-	for light in moodlights:
-		serial = usb.util.get_string(light, 256, light.iSerialNumber)
-		results.append(serial)
-	return results
-
-
-# Get a MoodLightUSB object - either for the first one found
-# or a special serial number
-# (hint: use usb_list_moodlights to choose from)
-def usb_get_moodlight(serial = None):
-	moodlights = _usb_get_all()
-
-	# If no serial number is given...
-	if serial != None:
-		if len(moodlights) > 0:
-			# ... simply take the first moodlight found
-			return _usb_moodlight_instance(moodlights[0])
-
-		else:
-			return None
-
-	# If a serial number is given: Search all connected devices
-	for light in moodlights:
-		if serial == usb.util.get_string(light, 256, light.iSerialNumber):
-			return _usb_moodlight_instance(light)
-	
-	# Nothing found
-	return None
-
-
-class MoodlightUSB:
+class InstanceUSB:
 	def __init__(self, dev, serial, product, manufacturer):
 		self.dev = dev
 		self.serial = serial
@@ -78,9 +39,8 @@ class MoodlightUSB:
 		self.dev.set_configuration()
 
 	def __del__(self):
-		self.sendMSG([0x20, 0x00, 0x00, 0x00, 0x04, 0x00, # RGB fade to black
-		              0x11, 0x00, 0x00, 0x00,             # Correct HSV value
-		              0x81, 0x00, 0x00])                  # Jump to initial ROM
+		if self.reattach:
+			self.dev.attach_kernel_driver(0)
 
 	def getSerial(self):
 		return self.serial;
@@ -110,4 +70,35 @@ class MoodlightUSB:
 		# Writing message as HID report to device
 		self.dev.ctrl_transfer(CONTROL_REQUEST_TYPE_OUT, HID_SET_REPORT, 0, 0, msg)
 		# Reading back HID report from device
-		print(self.dev.ctrl_transfer(CONTROL_REQUEST_TYPE_IN, HID_GET_REPORT, 0, 0, 128))
+		#print(self.dev.ctrl_transfer(CONTROL_REQUEST_TYPE_IN, HID_GET_REPORT, 0, 0, 128))
+
+
+class MoodBackUSB:
+	def getName(self):
+		return "usb"
+
+	# Returns a list of IDs corresponding to connected moodlights.
+	def getList(self):
+		results = []
+
+		moodlights = _usb_get_all()
+		
+		for light in moodlights:
+			serial = usb.util.get_string(light, 256, light.iSerialNumber)
+			results.append(serial)
+		return results
+
+	def getInstance(self, serial):
+		moodusb_logger.debug('usb_get_moodlight("%s")' % serial)
+		moodlights = _usb_get_all()
+
+		# If a serial number is given: Search all connected devices
+		for light in moodlights:
+			if serial == usb.util.get_string(light, 256, light.iSerialNumber):
+				manufacturer = usb.util.get_string(light, 256, light.iManufacturer)
+				product = usb.util.get_string(light, 256, light.iProduct)
+				return InstanceUSB(light, serial, product, manufacturer)
+		
+		# Nothing found
+		return None
+
