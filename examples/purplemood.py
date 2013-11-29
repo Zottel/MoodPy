@@ -12,9 +12,11 @@ from moodlight import moodlight_get
 
 m = moodlight_get()
 
+m.setRGB(0,0,0)
 def my_func(account, sender, message, conversation, flags):
-  m.setRGB(0xff, 0x00, 0x00)
-  m.fadeRGB(0x00, 0x00, 0x00, 8000)
+	print((account, sender, message, conversation, flags))
+	m.setRGB(0xff, 0x00, 0x00)
+	m.fadeRGB(0x00, 0x00, 0x00, 8000)
 
 dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 bus = dbus.SessionBus()
